@@ -1,5 +1,6 @@
 const Usuario = require('./usuarios-modelo');
 const jwt = require('jsonwebtoken');
+const blacklist = require('../../redis/manipula-blacklist')
 const { InvalidArgumentError, InternalServerError } = require('../erros');
 
 function criaTokenJWT(usuario) {
@@ -42,6 +43,16 @@ module.exports = {
     const token = criaTokenJWT(req.user);
     res.set('Authorization', token);
     res.status(204).send();
+  },
+
+  logout: async (req, res) => {
+    try {
+      const token = req.token;
+      await blacklist.adiciona(token);
+      res.status(204).send();
+    } catch (erro) {
+      res.status(500).send({ erro: erro.message })
+    }
   },
 
   lista: async (req, res) => {

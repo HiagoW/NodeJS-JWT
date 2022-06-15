@@ -41,6 +41,9 @@ module.exports = {
                 if (!usuario) {
                     return res.status(401).json();
                 }
+
+                // Insere na requisição pra recuperar para o logout
+                req.token = info.token;
                 req.user = usuario;
                 return next();
             }
